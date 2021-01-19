@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/mingrui-shop-basics/mingrui-shop-basic-eureka-server/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mingrui-shop-basics/mingrui-shop-basic-zuul-server/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mingrui-shop-commoms/mingrui-shop-common-core/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mingrui-shop-service-api/mingrui-shop-service-api-xxx/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mingrui-shop-service/mingrui-shop-service-xxx/src/main/java" charset="UTF-8" />
+  </component>
+</project>
