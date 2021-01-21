@@ -7,6 +7,7 @@ import com.baidu.shop.mapper.CategoryMapper;
 import com.baidu.shop.service.CategoryService;
 import com.baidu.shop.utils.ObjectUtil;
 import com.google.gson.JsonObject;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 import tk.mybatis.mapper.entity.Example;
 
@@ -64,6 +65,27 @@ public class CategoryServiceImpl extends BaseApiService implements CategoryServi
         }
         //通过id删除节点
         categoryMapper.deleteByPrimaryKey(id);
+        return this.setResultSuccess();
+    }
+    @Transactional
+    @Override
+    public Result<JsonObject> updateCategory(CategoryEntity categoryEntity) {
+        categoryMapper.updateByPrimaryKeySelective(categoryEntity);
+
+        return this.setResultSuccess();
+    }
+    @Transactional
+    @Override
+    public Result<JsonObject> saveCategory(CategoryEntity categoryEntity) {
+        CategoryEntity categoryEntity1 = new CategoryEntity();
+        //根据前台传过来的数据的ParentId 获得他父节点的ID
+        categoryEntity1.setId(categoryEntity.getParentId());
+        categoryEntity1.setIsParent(1);
+        //把父节点的IsParent属性修改为1 (声明前台传过来的ID的父节点为父节点)
+        categoryMapper.updateByPrimaryKeySelective(categoryEntity1);
+
+        //新增
+        categoryMapper.insertSelective(categoryEntity);
         return this.setResultSuccess();
     }
 }
