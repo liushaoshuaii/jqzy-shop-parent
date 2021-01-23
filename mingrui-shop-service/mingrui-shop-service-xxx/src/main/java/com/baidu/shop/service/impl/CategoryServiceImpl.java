@@ -1,5 +1,6 @@
 package com.baidu.shop.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baidu.shop.base.BaseApiService;
 import com.baidu.shop.base.Result;
 import com.baidu.shop.entity.CategoryEntity;
@@ -35,7 +36,7 @@ public class CategoryServiceImpl extends BaseApiService implements CategoryServi
     }
 
     @Override
-    public Result<JsonObject> delCategory(Integer id) {
+    public Result<JSONObject> delCategory(Integer id) {
         //检验id是否合法
         if(ObjectUtil.isNull(id) || id<=0) return this.setResultError("id不合法");
         CategoryEntity categoryEntity = categoryMapper.selectByPrimaryKey(id);
@@ -69,14 +70,14 @@ public class CategoryServiceImpl extends BaseApiService implements CategoryServi
     }
     @Transactional
     @Override
-    public Result<JsonObject> updateCategory(CategoryEntity categoryEntity) {
+    public Result<JSONObject> updateCategory(CategoryEntity categoryEntity) {
         categoryMapper.updateByPrimaryKeySelective(categoryEntity);
 
         return this.setResultSuccess();
     }
     @Transactional
     @Override
-    public Result<JsonObject> saveCategory(CategoryEntity categoryEntity) {
+    public Result<JSONObject> saveCategory(CategoryEntity categoryEntity) {
         CategoryEntity categoryEntity1 = new CategoryEntity();
         //根据前台传过来的数据的ParentId 获得他父节点的ID
         categoryEntity1.setId(categoryEntity.getParentId());
@@ -88,4 +89,11 @@ public class CategoryServiceImpl extends BaseApiService implements CategoryServi
         categoryMapper.insertSelective(categoryEntity);
         return this.setResultSuccess();
     }
+
+    @Override
+    public Result<List<CategoryEntity>> getByBrand(Integer brandId) {
+        List<CategoryEntity> categoryByBrandId = categoryMapper.getCategoryByBrandId(brandId);
+        return this.setResultSuccess(categoryByBrandId);
+    }
+
 }
