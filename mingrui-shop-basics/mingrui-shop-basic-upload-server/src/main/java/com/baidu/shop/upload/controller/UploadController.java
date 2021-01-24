@@ -22,8 +22,8 @@ import java.util.UUID;
  * @Date 2021/1/23
  * @Version V1.0
  **/
-@RestController
-@RequestMapping(value = "upload")
+//@RestController
+//@RequestMapping(value="upload")
 public class UploadController extends BaseApiService {
 
     //linux系统的上传目录
@@ -74,5 +74,6 @@ public class UploadController extends BaseApiService {
 
         return this.setResult(HTTPStatus.OK,"upload success!!!",imageHost + "/" + filename);//将文件名返回页面用于页面回显
     }
+
 
 }
