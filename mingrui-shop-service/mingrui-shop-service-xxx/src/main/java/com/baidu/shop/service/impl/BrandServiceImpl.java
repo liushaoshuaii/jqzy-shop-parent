@@ -91,6 +91,13 @@ public class BrandServiceImpl extends BaseApiService implements BrandService {
         this.deleteCategoryBrandByBrandId(id);
         return this.setResultSuccess();
     }
+
+    @Override
+    public Result<List<BrandEntity>> getBrandInfoByCategoryId(Integer cid) {
+        List<BrandEntity> brandInfoByCategoryId = brandMapper.getBrandInfoByCategoryId(cid);
+        return this.setResultSuccess(brandInfoByCategoryId);
+    }
+
     //批量新增 新增
     private void saveOrUpdate(String categories,Integer brandId){
         if(StringUtils.isEmpty(categories)) throw new RuntimeException("分类信息不能为空");
