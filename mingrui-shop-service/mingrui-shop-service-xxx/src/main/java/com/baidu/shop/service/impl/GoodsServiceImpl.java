@@ -101,6 +101,60 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
         this.saveSkusAndStock(spuDTO,spuEntity.getId(),date);
         return this.setResultSuccess();
     }
+
+    @Override
+    public Result<SpuDetailDTO> getSpuDetailByIdSpu(Integer spuId) {
+        SpuDetailEntity spuDetailEntity = spuDetailMapper.selectByPrimaryKey(spuId);
+        return this.setResultSuccess(spuDetailEntity);
+    }
+
+    @Override
+    public Result<List<SkuDTO>> getSkuBySpuId(Integer spuId) {
+        List<SkuDTO> list = skuMapper.selectSkuAndStockSpuId(spuId);
+        return this.setResultSuccess(list);
+    }
+    @Transactional
+    @Override
+    public Result<JSONObject> editGoods(SpuDTO spuDTO) {
+        final Date date = new Date();
+
+        SpuEntity spuEntity = BaiduBeanUtil.copyProperties(spuDTO, SpuEntity.class);
+        spuEntity.setLastUpdateTime(date);
+        spuMapper.updateByPrimaryKeySelective(spuEntity);
+
+        spuDetailMapper.updateByPrimaryKeySelective(BaiduBeanUtil.copyProperties(spuDTO.getSpuDetail(),SpuDetailEntity.class));
+
+        this.deleteSkusAndStock(spuEntity.getId());
+        this.saveSkusAndStock(spuDTO,spuEntity.getId(),date);
+        return this.setResultSuccess();
+    }
+    @Transactional
+    @Override
+    public Result<JSONObject> deleteGoods(Integer spuId) {
+        spuMapper.deleteByPrimaryKey(spuId);
+        spuDetailMapper.deleteByPrimaryKey(spuId);
+        this.deleteSkusAndStock(spuId);
+        return this.setResultSuccess();
+    }
+    @Transactional
+    @Override
+    public Result<JSONObject> downOrUp(SpuDTO spuDTO) {
+        SpuEntity spuEntity = BaiduBeanUtil.copyProperties(spuDTO, SpuEntity.class);
+        if (ObjectUtil.isNotNull(spuEntity.getSaleable())&&spuEntity.getSaleable()<2){
+            if(spuEntity.getSaleable()==1){
+                spuEntity.setSaleable(0);
+                spuMapper.updateByPrimaryKeySelective(spuEntity);
+                return this.setResultSuccess("下架成功");
+            }
+            if(spuEntity.getSaleable()==0){
+                spuEntity.setSaleable(1);
+                spuMapper.updateByPrimaryKeySelective(spuEntity);
+                return this.setResultSuccess("上架成功");
+            }
+        }
+        return this.setResultError("失败");
+    }
+
     private  void saveSkusAndStock(SpuDTO spuDTO,Integer spuId,Date date){
         List<SkuDTO> skus = spuDTO.getSkus();
         skus.stream().forEach(skuDTO -> {
@@ -117,5 +171,15 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
             stockEntity.setStock(skuDTO.getStock());
             stockMapper.insertSelective(stockEntity);
         });
+    }
+     //封装删除skus和stock代码
+    private void deleteSkusAndStock(Integer spuId){
+        Example example = new Example(SkuEntity.class);
+        example.createCriteria().andEqualTo("spuId",spuId);
+        List<SkuEntity> skuEntities = skuMapper.selectByExample(example);
+        //得到skuId集合
+        List<Long> skuIdArr = skuEntities.stream().map(sku -> sku.getId()).collect(Collectors.toList());
+        skuMapper.deleteByIdList(skuIdArr);//通过spuId集合删除sku信息
+        stockMapper.deleteByIdList(skuIdArr);//通过spuId集合删除stock信息
     }
 }
